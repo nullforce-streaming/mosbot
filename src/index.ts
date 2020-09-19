@@ -8,10 +8,10 @@ if (process.env.MOSBOT_COMMAND === undefined || process.env.MOSBOT_CHANNELS === 
     process.exit();
 }
 
-const command: string = process.env.MOSBOT_COMMAND;
-const channels: string[] = process.env.MOSBOT_CHANNELS.split(',');
-const usernames: string[] = process.env.MOSBOT_USERS.split(',');
-const tokens: string[] = process.env.MOSBOT_TOKENS.split(',');
+const command: string = process.env.MOSBOT_COMMAND.trim();
+const channels: string[] = trimAndSplit(process.env.MOSBOT_CHANNELS);
+const usernames: string[] = trimAndSplit(process.env.MOSBOT_USERS);
+const tokens: string[] = trimAndSplit(process.env.MOSBOT_TOKENS);
 const firstUsername = usernames[0];
 
 console.log(usernames);
@@ -25,4 +25,8 @@ const mosBotOptions: MosBotOptions = {
 // spawn one client per user
 for (let i in usernames) {
     const bot = new MosBot(usernames[i], tokens[i], mosBotOptions);
+}
+
+function trimAndSplit(str: string): string[] {
+    return str.replace(/ /g, '').split(',');
 }
