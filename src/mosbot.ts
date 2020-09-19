@@ -1,29 +1,36 @@
 import * as tmi from "tmi.js";
-import * as dotenv from "dotenv";
 import client from "tmi.js/lib/client";
 
-class MosBot {
+export interface MosBotOptions {
+    channels: string[],
+    command: string,
+    primaryUser: string,
+}
+
+export class MosBot {
     username: string;
     token: string;
     client: client;
+    opts: MosBotOptions;
 
     dict = {};
     lastCommandCountTimes: any;
     commandCounts = {};
 
-    constructor(username: string, token: string) {
+    constructor(username: string, token: string, opts: MosBotOptions) {
         this.username = username;
         this.token = token;
+        this.opts = opts;
 
-        const opts = {
+        const tmiOpts = {
             identity: {
                 username: username,
                 password: token,
             },
-            channels: channels
+            channels: opts.channels
         }
 
-        const client = tmi.client(opts);
+        const client = tmi.client(tmiOpts);
         this.client = client;
 
         client.on("message", (channel, context, msg, self) => this.onMessageHandler(channel, context, msg, self));
@@ -47,13 +54,13 @@ class MosBot {
         const username = context.username.toLowerCase();
 
         // Only log on the first user per channel (prevent duplicates)
-        if (this.username === firstUsername) {
+        if (this.username === this.opts.primaryUser) {
             console.log(`Channel: ${channel}, Username: '${username}', Command: '${commandName}'`);
         }
 
         let shouldExecuteCommand = false;
 
-        if (commandName.startsWith(command)) {
+        if (commandName.startsWith(this.opts.command)) {
             let commandReceivedCount = this.commandCounts[channel] || 0;
 
             if (secondsAgo(this.lastCommandCountTimes, now, 30)) {
@@ -64,7 +71,7 @@ class MosBot {
             this.lastCommandCountTimes = now;
 
             // Only log on the first user per channel (prevent duplicates)
-            if (this.username === firstUsername) {
+            if (this.username === this.opts.primaryUser) {
                 console.log(`Command count[${channel}]: ${commandReceivedCount}`);
             }
 
@@ -82,32 +89,12 @@ class MosBot {
             if (typeof last === "undefined" || secondsAgo(last, now, 120)) {
                 this.dict[channel] = now;
                 setTimeout(() => {
-                    this.client.say(channel, command);
-                    console.log(`Time: ${now}, [${this.username}] Sending ${command}`);
+                    this.client.say(channel, this.opts.command);
+                    console.log(`Time: ${now}, [${this.username}] Sending ${this.opts.command}`);
                 }, getRandomInt(6) * 1000);
             }
         }
     }
-}
-
-dotenv.config();
-
-if (process.env.MOSBOT_COMMAND === undefined || process.env.MOSBOT_CHANNELS === undefined || process.env.MOSBOT_USERS === undefined || process.env.MOSBOT_TOKENS === undefined) {
-    console.log("Command, Channels, Users, and Tokens must be provided!");
-    process.exit();
-}
-
-const command: string = process.env.MOSBOT_COMMAND;
-const channels: string[] = process.env.MOSBOT_CHANNELS.split(',');
-const usernames: string[] = process.env.MOSBOT_USERS.split(',');
-const tokens: string[] = process.env.MOSBOT_TOKENS.split(',');
-const firstUsername = usernames[0];
-
-console.log(usernames);
-
-// spawn one client per user
-for (let i in usernames) {
-    const bot = new MosBot(usernames[i], tokens[i]);
 }
 
 function secondsAgo(last, now, seconds) {

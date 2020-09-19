@@ -4,9 +4,11 @@
   "description": "A chatbot for Twitch",
   "main": "index.js",
   "scripts": {
-    "start": "tsc index.ts --outdir dist && node dist/index.js",
-    "build": "tsc index.ts --outdir dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run gulp:start -s",
+    "build": "npm run gulp:build -s",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp:start": "gulp start",
+    "gulp:build": "gulp build"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,11 @@
   },
   "devDependencies": {
     "@types/node": "^14.11.1",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
+    "gulp-nodemon": "^2.5.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "typescript": "^4.0.2"
   }
 }
