@@ -19,6 +19,13 @@ Download and install the stable release at [Node.js](https://nodejs.org/en/).
 
 Download and unzip the source code for this chatbot to a folder on your local disk.
 
+From the folder execute (typically needed once):
+
+```bash
+npm install
+```
+
+
 ### Configuration with .env
 
 Copy `.env.sample` to `.env`. Within the `.env` file, provide values for:
@@ -39,3 +46,7 @@ From the folder execute:
 ```bash
 npm start
 ```
+
+### Stop the Bot
+
+Press `Ctrl+C` to stop the bot.
