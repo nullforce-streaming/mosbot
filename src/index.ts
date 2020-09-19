@@ -9,6 +9,9 @@ if (process.env.MOSBOT_COMMAND === undefined || process.env.MOSBOT_CHANNELS === 
 }
 
 const command: string = process.env.MOSBOT_COMMAND.trim();
+const commandWindowInSeconds: number = parseInt(process.env.MOSBOT_COMMAND_WINDOW_SECONDS) ?? 30;
+const commandCooldownInSeconds: number = parseInt(process.env.MOSBOT_COMMAND_COOLDOWN_SECONDS) ?? 120;
+
 const channels: string[] = trimAndSplit(process.env.MOSBOT_CHANNELS);
 const usernames: string[] = trimAndSplit(process.env.MOSBOT_USERS);
 const tokens: string[] = trimAndSplit(process.env.MOSBOT_TOKENS);
@@ -20,6 +23,8 @@ const mosBotOptions: MosBotOptions = {
     channels: channels,
     command: command,
     primaryUser: firstUsername,
+    commandWindowInSeconds: commandWindowInSeconds,
+    commandCooldownInSeconds: commandCooldownInSeconds,
 };
 
 // spawn one client per user

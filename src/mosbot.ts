@@ -5,6 +5,8 @@ export interface MosBotOptions {
     channels: string[],
     command: string,
     primaryUser: string,
+    commandWindowInSeconds: number,
+    commandCooldownInSeconds: number,
 }
 
 export class MosBot {
@@ -63,7 +65,7 @@ export class MosBot {
         if (commandName.startsWith(this.opts.command)) {
             let commandReceivedCount = this.commandCounts[channel] || 0;
 
-            if (secondsAgo(this.lastCommandCountTimes, now, 30)) {
+            if (secondsAgo(this.lastCommandCountTimes, now, this.opts.commandWindowInSeconds)) {
                 commandReceivedCount = 0;
             }
 
@@ -86,7 +88,7 @@ export class MosBot {
             // reset play count
             this.commandCounts[channel] = 0;
 
-            if (typeof last === "undefined" || secondsAgo(last, now, 120)) {
+            if (typeof last === "undefined" || secondsAgo(last, now, this.opts.commandCooldownInSeconds)) {
                 this.dict[channel] = now;
                 setTimeout(() => {
                     this.client.say(channel, this.opts.command);
