@@ -1,7 +1,6 @@
 import * as tmi from "tmi.js";
 import * as dotenv from "dotenv";
 import client from "tmi.js/lib/client";
-import { exit } from "process";
 
 class MosBot {
     username: string;
@@ -9,8 +8,8 @@ class MosBot {
     client: client;
 
     dict = {};
-    lastCommandCountTime: any;
-    commandCount = {};
+    lastCommandCountTimes: any;
+    commandCounts = {};
 
     constructor(username: string, token: string) {
         this.username = username;
@@ -47,36 +46,38 @@ class MosBot {
         const commandNameLower = commandName.toLowerCase();
         const username = context.username.toLowerCase();
 
+        // Only log on the first user per channel (prevent duplicates)
         if (this.username === firstUsername) {
             console.log(`Channel: ${channel}, Username: '${username}', Command: '${commandName}'`);
         }
 
-        let executeCommand = false;
+        let shouldExecuteCommand = false;
 
         if (commandName.startsWith(command)) {
-            let commandReceivedCount = this.commandCount[channel] || 0;
+            let commandReceivedCount = this.commandCounts[channel] || 0;
 
-            if (secondsAgo(this.lastCommandCountTime, now, 30)) {
+            if (secondsAgo(this.lastCommandCountTimes, now, 30)) {
                 commandReceivedCount = 0;
             }
 
-            this.commandCount[channel] = ++commandReceivedCount;
-            this.lastCommandCountTime = now;
+            this.commandCounts[channel] = ++commandReceivedCount;
+            this.lastCommandCountTimes = now;
 
+            // Only log on the first user per channel (prevent duplicates)
             if (this.username === firstUsername) {
                 console.log(`Command count[${channel}]: ${commandReceivedCount}`);
             }
 
             if (commandReceivedCount >= 2) {
-                executeCommand = true;
+                shouldExecuteCommand = true;
             }
         }
 
-        if (executeCommand) {
+        if (shouldExecuteCommand) {
             const last = this.dict[channel];
 
             // reset play count
-            this.commandCount[channel] = 0;
+            this.commandCounts[channel] = 0;
 
             if (typeof last === "undefined" || secondsAgo(last, now, 120)) {
                 this.dict[channel] = now;
