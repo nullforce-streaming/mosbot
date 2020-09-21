@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
 import { MosBot, MosBotOptions } from "./mosbot";
 
+const config = require("./config.json")
+
 dotenv.config();
 
 if (process.env.MOSBOT_COMMAND === undefined || process.env.MOSBOT_CHANNELS === undefined || process.env.MOSBOT_USERS === undefined || process.env.MOSBOT_TOKENS === undefined) {
@@ -17,7 +19,8 @@ const usernames: string[] = trimAndSplit(process.env.MOSBOT_USERS);
 const tokens: string[] = trimAndSplit(process.env.MOSBOT_TOKENS);
 const firstUsername = usernames[0];
 
-console.log(usernames);
+console.log(`Usernames ${usernames}`);
+console.log(`Channels ${channels}`);
 
 const mosBotOptions: MosBotOptions = {
     channels: channels,
@@ -25,6 +28,7 @@ const mosBotOptions: MosBotOptions = {
     primaryUser: firstUsername,
     commandWindowInSeconds: commandWindowInSeconds,
     commandCooldownInSeconds: commandCooldownInSeconds,
+    responseConfig: config.responseConfig,
 };
 
 // spawn one client per user

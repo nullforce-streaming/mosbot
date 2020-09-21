@@ -1,3 +1,4 @@
+import { config } from "dotenv/types";
 import * as tmi from "tmi.js";
 import client from "tmi.js/lib/client";
 
@@ -7,6 +8,12 @@ export interface MosBotOptions {
     primaryUser: string,
     commandWindowInSeconds: number,
     commandCooldownInSeconds: number,
+    responseConfig?: TriggerResponseConfig[],
+}
+
+export interface TriggerResponseConfig {
+    triggers: string[],
+    responses: string[],
 }
 
 export class MosBot {
@@ -82,6 +89,10 @@ export class MosBot {
             }
         }
 
+        if (this.username === this.opts.primaryUser) {
+            this.sayResponse(channel, commandNameLower);
+        }
+
         if (shouldExecuteCommand) {
             const last = this.dict[channel];
 
@@ -94,6 +105,22 @@ export class MosBot {
                     this.client.say(channel, this.opts.command);
                     console.log(`Time: ${now}, [${this.username}] Sending ${this.opts.command}`);
                 }, getRandomInt(6) * 1000);
+            }
+        }
+    }
+
+    sayResponse(channel, commandNameLower): void {
+        if (this.opts.responseConfig === undefined) {
+            return;
+        }
+
+        // check for configured triggers
+        for (let config of this.opts.responseConfig) {
+            // if the command contains some of the trigger values
+            if (config.triggers.some(v => commandNameLower.includes(v))) {
+                // pick one of the reponses and send it
+                this.client.say(channel, config.responses[getRandomInt(config.responses.length)]);
+                break;
             }
         }
     }

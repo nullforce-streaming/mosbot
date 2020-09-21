@@ -8,8 +8,8 @@ var tsProject = ts.createProject("tsconfig.json");
 
 // Build
 gulp.task("build", () => {
-    // gulp.src("./src/config.json")
-    //     .pipe(gulp.dest("dist/"));
+    gulp.src("./src/config.json")
+        .pipe(gulp.dest("dist/"));
 
     // source -> TypeScript -> dist
     return gulp.src("./src/**/*.ts")

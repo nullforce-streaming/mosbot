@@ -1,0 +1,27 @@
+{
+    "responseConfig": [
+        {
+            "triggers": [
+                "pogchamp"
+            ],
+            "responses": [
+                "PogChamp",
+                "PogChamp PogChamp",
+                "PogChamp PogChamp",
+                "PogChamp PogChamp PogChamp",
+                "PogChamp PogChamp PogChamp",
+                "PogChamp PogChamp PogChamp"
+            ]
+        },
+        {
+            "triggers": [
+                "lul"
+            ],
+            "responses": [
+                "LUL",
+                "LUL LUL",
+                "LUL LUL LUL"
+            ]
+        }
+    ]
+}
